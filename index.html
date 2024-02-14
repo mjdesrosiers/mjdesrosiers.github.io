@@ -25,10 +25,162 @@
 <body>
 
 <script>
-function onClick(i) {
- console.log(i);
-}
+  if('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('service-worker.js');
+  }
 </script>
+
+<script>
+  window.addEventListener('DOMContentLoaded', function() {
+    const searchParams = new URL(location).searchParams;
+    const inputs = Array.from(document.querySelectorAll('input[id]'));
+
+    inputs.forEach(input => {
+      if (searchParams.has(input.id)) {
+        if (input.type == 'checkbox') {
+          input.checked = searchParams.get(input.id);
+        } else {
+          input.value = searchParams.get(input.id);
+          input.blur();
+        }
+      }
+      if (input.type == 'checkbox') {
+        input.addEventListener('change', function(event) {
+          const newSearchParams = new URL(location).searchParams;
+          if (event.target.checked) {
+            newSearchParams.set(input.id, event.target.checked);
+          } else {
+            newSearchParams.delete(input.id);
+          }
+          history.replaceState({}, '', Array.from(newSearchParams).length ?
+              location.pathname + '?' + newSearchParams : location.pathname);
+        });
+      } else {
+        input.addEventListener('input', function(event) {
+          const newSearchParams = new URL(location).searchParams;
+          if (event.target.value) {
+            newSearchParams.set(input.id, event.target.value);
+          } else {
+            newSearchParams.delete(input.id);
+          }
+          history.replaceState({}, '', Array.from(newSearchParams).length ?
+              location.pathname + '?' + newSearchParams : location.pathname);
+        });
+      }
+    });
+  });
+</script>
+
+
+<script>
+  var ChromeSamples = {
+    log: function() {
+      var line = Array.prototype.slice.call(arguments).map(function(argument) {
+        return typeof argument === 'string' ? argument : JSON.stringify(argument);
+      }).join(' ');
+
+      document.querySelector('#log').textContent += line + '\n';
+    },
+
+    clearLog: function() {
+      document.querySelector('#log').textContent = '';
+    },
+
+    setStatus: function(status) {
+      document.querySelector('#status').textContent = status;
+    },
+
+    setContent: function(newContent) {
+      var content = document.querySelector('#content');
+      while(content.hasChildNodes()) {
+        content.removeChild(content.lastChild);
+      }
+      content.appendChild(newContent);
+    }
+  };
+</script>
+
+
+<script>
+  log = ChromeSamples.log;
+
+  function isWebBluetoothEnabled() {
+    if (navigator.bluetooth) {
+      return true;
+    } else {
+      ChromeSamples.setStatus('Web Bluetooth API is not available.\n' +
+          'Please make sure the "Experimental Web Platform features" flag is enabled.');
+      return false;
+    }
+  }
+</script>
+
+<script>
+  async function onButtonClick() {
+  try {
+    log('Requesting Bluetooth Device...');
+
+    const device  = await navigator.bluetooth.requestDevice({
+      filters: [{
+          name: 'MJD_BLE'
+        }],
+        optionalServices: [0x1848] // Required to access service later.
+    });
+
+
+    log('Connecting to GATT Server...');
+    const server = await device.gatt.connect();
+
+    log('Getting Heart Rate Service...');
+    const service = await server.getPrimaryService(0x1848);
+
+    log('Getting Heart Rate Control Point Characteristic...');
+    const characteristic = await service.getCharacteristic(0x2A6E);
+
+    log('Writing Heart Rate Control Point Characteristic...');
+    // Writing 1 is the signal to reset energy expended.
+    let resetEnergyExpended = Uint8Array.of(1);
+    await characteristic.writeValue(resetEnergyExpended);
+
+    log('> Energy expended has been reset.');
+    await device.gatt.disconnect();
+    log('> Disconnected.');
+  } catch(error) {
+    log('Argh! ' + error);
+  }
+}
+
+</script>
+
+
+<h3>Live Output</h3>
+<div id="output" class="output">
+  <div id="status"></div>
+  <pre id="log"></pre>
+</div>
+
+<script>
+  if (/Chrome\/(\d+\.\d+.\d+.\d+)/.test(navigator.userAgent)){
+    // Let's log a warning if the sample is not supposed to execute on this
+    // version of Chrome.
+    if ({{ page.chrome_version }} > parseInt(RegExp.$1)) {
+      ChromeSamples.setStatus('Warning! Keep in mind this sample has been tested with Chrome ' + {{ page.chrome_version }} + '.');
+    }
+  }
+</script>
+
+
+<button>Reset Energy Expended</button>
+
+<script>
+  document.querySelector('button').addEventListener('click', function() {
+    if (isWebBluetoothEnabled()) {
+      ChromeSamples.clearLog();
+      onButtonClick();
+    }
+  });
+</script>
+
 
 <div class="grid-container">
   <div class="grid-item" onClick="onClick(1)">1</div>

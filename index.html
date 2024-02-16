@@ -15,9 +15,13 @@
 			background-color: rgba(255, 255, 255, 0.8);
 			border: 1px solid rgba(0, 0, 0, 0.8);
 			padding: 20px;
-			font-size: 30px;
+			font-size: 90px;
 			text-align: center;
-			vertical-align: middle;
+			/*vertical-align: middle;*/
+			display: flex;
+			justify-content: center;
+			align-content: center;
+			flex-direction: column;
 		}
 	</style>
 
@@ -71,7 +75,7 @@
 					return typeof argument === 'string' ? argument : JSON.stringify(argument);
 				}).join(' ');
 
-				document.querySelector('#log').textContent += line + '\n';
+				//document.querySelector('#log').textContent += line + '\n';
 			},
 
 			clearLog: function () {
@@ -116,13 +120,16 @@
 		}
 
 		id = makeID();
+		device = null;
+		server = null;
+		service = null;
+		characteristic = null;
 
-		async function onButtonClick(number) {
-
+		async function pairWithBeacon(number) {
 			try {
 				log('Requesting Bluetooth Device...');
 
-				const device = await navigator.bluetooth.requestDevice({
+				device = await navigator.bluetooth.requestDevice({
 					filters: [{
 						name: 'MJD_BLE'
 					}],
@@ -131,32 +138,33 @@
 
 
 				log('Connecting to GATT Server...');
-				const server = await device.gatt.connect();
+				server = await device.gatt.connect();
 
 				log('Getting Heart Rate Service...');
-				const service = await server.getPrimaryService("0000FFFF-0000-1000-8000-00805F9B34FB".toLowerCase());
+				service = await server.getPrimaryService("0000FFFF-0000-1000-8000-00805F9B34FB".toLowerCase());
 
 				log('Getting Heart Rate Control Point Characteristic...');
-				const characteristic = await service.getCharacteristic("0000FF01-0000-1000-8000-00805F9B34FB".toLowerCase());
-
-				log('Writing Heart Rate Control Point Characteristic...');
-				// Writing 1 is the signal to reset energy expended.
-				let resetEnergyExpended = Uint8Array.of(1);
-				for (let i = 0; i < 1; i++) {
-					log("Writing " + i);
-					resetEnergyExpended = Uint8Array.of(id[0], id[1], id[2], id[3], number)
-					await characteristic.writeValue(resetEnergyExpended);
-					// await sleep(1000);
-				}
-
-
+				characteristic = await service.getCharacteristic("0000FF01-0000-1000-8000-00805F9B34FB".toLowerCase());
 
 				log('> Energy expended has been reset.');
-				await device.gatt.disconnect();
-				log('> Disconnected.');
+				
 			} catch (error) {
 				log('Argh! ' + error);
 			}
+		}
+
+		async function onButtonClick(number) {
+			log('Writing Heart Rate Control Point Characteristic...');
+			// Writing 1 is the signal to reset energy expended.
+			let resetEnergyExpended = Uint8Array.of(1);
+			for (let i = 0; i < 1; i++) {
+				log("Writing " + i);
+				resetEnergyExpended = Uint8Array.of(id[0], id[1], id[2], id[3], number)
+				await characteristic.writeValue(resetEnergyExpended);
+				// await sleep(1000);
+			}
+			//await device.gatt.disconnect();
+			//log('> Disconnected.');
 		}
 
 	</script>
@@ -171,12 +179,12 @@
 			// version of Chrome.
 	}
 	</script>
-	<button>Reset Energy Expended</button>
+	<button>Pair with beacon</button>
 	<script>
 		document.querySelector('button').addEventListener('click', function () {
 			if (isWebBluetoothEnabled()) {
 				ChromeSamples.clearLog();
-				onButtonClick();
+				pairWithBeacon();
 			}
 		});
 	</script>

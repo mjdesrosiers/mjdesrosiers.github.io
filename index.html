@@ -146,11 +146,11 @@
 	log('Writing Heart Rate Control Point Characteristic...');
 	// Writing 1 is the signal to reset energy expended.
 	let resetEnergyExpended = Uint8Array.of(1);
-	for (let i = 0; i < 255; i++) {
+	for (let i = 0; i < 1; i++) {
 	log("Writing " + i);
 	resetEnergyExpended = Uint8Array.of(id[0], id[1], id[2], id[3], i)
 	await characteristic.writeValue(resetEnergyExpended);
-	await sleep(1000);
+	// await sleep(1000);
 	}
 	
 	

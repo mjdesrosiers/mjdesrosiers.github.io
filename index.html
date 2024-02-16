@@ -1,8 +1,32 @@
+<meta name="viewport" 
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+<head>
+<style>
+.grid-container {
+  display: grid;
+  height: 90vh;
+  width: 90vw;
+  grid-template-columns: auto auto auto;
+  background-color: #2196F3;
+  padding: 10px;
+}
+.grid-item {
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.8);
+  padding: 20px;
+  font-size: 30px;
+  text-align: center;
+  vertical-align: middle;
+}
+</style>
+
 <script>
 	if('serviceWorker' in navigator) {
 	  navigator.serviceWorker.register('service-worker.js');
 	}
 </script>
+
+
 <script>
 	window.addEventListener('DOMContentLoaded', function() {
 	  const searchParams = new URL(location).searchParams;
@@ -163,3 +187,25 @@
 	  }
 	});
 </script>
+
+<script>
+  document.querySelector('button').addEventListener('click', function() {
+    if (isWebBluetoothEnabled()) {
+      ChromeSamples.clearLog();
+      onButtonClick();
+    }
+  });
+</script>
+
+
+<div class="grid-container">
+  <div class="grid-item" onClick="onClick(1)">1</div>
+  <div class="grid-item" onClick="onClick(2)">2</div>
+  <div class="grid-item" onClick="onClick(3)">3</div>
+  <div class="grid-item" onClick="onClick(4)">4</div>
+  <div class="grid-item" onClick="onClick(5)">5</div>
+  <div class="grid-item" onClick="onClick(6)">6</div>
+  <div class="grid-item" onClick="onClick(7)">7</div>
+  <div class="grid-item" onClick="onClick(8)">8</div>
+  <div class="grid-item" onClick="onClick(9)">9</div>
+</div>

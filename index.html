@@ -15,7 +15,7 @@
 			background-color: rgba(255, 255, 255, 0.8);
 			border: 1px solid rgba(0, 0, 0, 0.8);
 			padding: 20px;
-			font-size: 90px;
+			font-size: 4vh;
 			text-align: center;
 			/*vertical-align: middle;*/
 			display: flex;
@@ -168,7 +168,6 @@
 		}
 
 	</script>
-	<h3>Live Output (1)</h3>
 	<div id="output" class="output">
 		<div id="status"></div>
 		<pre id="log"></pre>
@@ -179,7 +178,8 @@
 			// version of Chrome.
 	}
 	</script>
-	<button>Pair with beacon</button>
+	<center><button style="font-size:2vh">Pair with beacon</button></center>
+	<br><br>
 	<script>
 		document.querySelector('button').addEventListener('click', function () {
 			if (isWebBluetoothEnabled()) {
@@ -209,4 +209,10 @@
 		<div class="grid-item" onClick="onButtonClick(7)">7</div>
 		<div class="grid-item" onClick="onButtonClick(8)">8</div>
 		<div class="grid-item" onClick="onButtonClick(9)">9</div>
+		<div class="grid-item" onClick="onButtonClick(7)">10</div>
+		<div class="grid-item" onClick="onButtonClick(8)">11</div>
+		<div class="grid-item" onClick="onButtonClick(9)">12</div>
+		<div class="grid-item" onClick="onButtonClick(45)">🔈</div>
+		<div class="grid-item" onClick="onButtonClick(255)">🔇</div>
+		<div class="grid-item" onClick="onButtonClick(43)">🔊</div>
 	</div>

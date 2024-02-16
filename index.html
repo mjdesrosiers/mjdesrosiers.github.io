@@ -92,11 +92,22 @@
 
 <script>
 
-  async function onButtonClick() {
-    function sleep(ms) {
+      function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
+
+  function makeID() {
+    idBits = [0, 0, 0, 0]
+    for (let i = 0; i < 4; i++) {
+      idBits[i] = Math.floor(Math.random() * 256);
+    }
+    return idBits;
+  }
+
+  async function onButtonClick() {
+
   try {
+    id = makeID();
     log('Requesting Bluetooth Device...');
 
     const device  = await navigator.bluetooth.requestDevice({
@@ -121,7 +132,7 @@
     let resetEnergyExpended = Uint8Array.of(1);
     for (let i = 0; i < 255; i++) {
       log("Writing " + i);
-      resetEnergyExpended = Uint8Array.of(i)
+      resetEnergyExpended = Uint8Array.of(id[0], id[1], id[2], id[3], i)
       await characteristic.writeValue(resetEnergyExpended);
       await sleep(1000);
     }
@@ -139,7 +150,7 @@
 </script>
 
 
-<h3>Live Output</h3>
+<h3>Live Output (1)</h3>
 <div id="output" class="output">
   <div id="status"></div>
   <pre id="log"></pre>

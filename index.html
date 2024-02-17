@@ -4,7 +4,7 @@
 	<style>
 		.grid-container {
 			display: grid;
-			height: 150vh;
+			height: 100vh;
 			width: 90vw;
 			margin:auto;
 			grid-template-columns: repeat(3, 1fr);
@@ -14,9 +14,9 @@
 		}
 
 		.grid-item {
-			background-color: rgba(240, 240, 240, 0.8);
+			background-color: rgba(240, 240, 240, 1.0);
 			border: 5px solid rgba(255, 255, 255, 1.0);
-			padding: 0.1vh;
+			padding: 0.4vh;
 			font-size: clamp(1rem, 2vh, 4rem);
 			text-align: center;
 			border-radius: 3vh;
@@ -157,7 +157,11 @@
 			}
 		}
 
-		async function onButtonClick(number) {
+		async function onButtonClick(dv, number) {
+			dv.style.backgroundColor = "#8c8c8c";
+			setTimeout(function(){
+				dv.style.backgroundColor = "#f0f0f0";
+}			,200);
 			log('Writing Heart Rate Control Point Characteristic...');
 			// Writing 1 is the signal to reset energy expended.
 			let resetEnergyExpended = Uint8Array.of(1);
@@ -196,28 +200,28 @@
 
 
 	<div class="grid-container">
-		<div class="grid-item" onClick="onButtonClick(1)">🎺 Curb theme</div>
-		<div class="grid-item" onClick="onButtonClick(2)">🫴 Trump Cum</div>
-		<div class="grid-item" onClick="onButtonClick(3)">❌ Do Not Cum</div>
-		<div class="grid-item" onClick="onButtonClick(4)">⚒️ Home Improvement</div>
-		<div class="grid-item" onClick="onButtonClick(5)">🍝 Spaghet</div>
-		<div class="grid-item" onClick="onButtonClick(6)">🍋 Life Gives Ya Lemons</div>
-		<div class="grid-item" onClick="onButtonClick(7)">👌 Perfect</div>
-		<div class="grid-item" onClick="onButtonClick(8)">🌟 Mario Kart Star</div>
-		<div class="grid-item" onClick="onButtonClick(9)">🧑‍⚖️ My Name is Judge</div>
-		<div class="grid-item" onClick="onButtonClick(10)">🦴 Bad To The Bone</div>
-		<div class="grid-item" onClick="onButtonClick(11)">😢 Spongebob Disappointed</div>
-		<div class="grid-item" onClick="onButtonClick(12)">🤨 Bruh</div>
-		<div class="grid-item" onClick="onButtonClick(13)">💨 Fart</div>
-		<div class="grid-item" onClick="onButtonClick(14)">😱 Wilhem Scream</div>
-		<div class="grid-item" onClick="onButtonClick(15)">🥜 Nut</div>
-		<div class="grid-item" onClick="onButtonClick(16)">🤹 Skill Issue</div>
-		<div class="grid-item" onClick="onButtonClick(17)">🪖 Mike D Discord</div>
-		<div class="grid-item" onClick="onButtonClick(18)">😋 I'm Hungry</div>
-		<div class="grid-item" onClick="onButtonClick(19)">🐢 I Like Turtles</div>
-		<div class="grid-item" onClick="onButtonClick(20)">👏 Please Clap</div>
-		<div class="grid-item" onClick="onButtonClick(21)">💨💨Fart 2</div>
-		<div class="grid-item" onClick="onButtonClick(45)">🔈</div>
-		<div class="grid-item" onClick="onButtonClick(255)">🔇</div>
-		<div class="grid-item" onClick="onButtonClick(43)">🔊</div>
+		<div class="grid-item" onClick="onButtonClick(this, 48)">🎺 Curb theme</div>
+		<div class="grid-item" onClick="onButtonClick(this, 49)">🫴 Trump Cum</div>
+		<div class="grid-item" onClick="onButtonClick(this, 50)">❌ Do Not Cum</div>
+		<div class="grid-item" onClick="onButtonClick(this, 51)">⚒️ Home Improvement</div>
+		<div class="grid-item" onClick="onButtonClick(this, 52)">🍝 Spaghet</div>
+		<div class="grid-item" onClick="onButtonClick(this, 53)">🍋 Life Gives Ya Lemons</div>
+		<div class="grid-item" onClick="onButtonClick(this, 54)">👌 Perfect</div>
+		<div class="grid-item" onClick="onButtonClick(this, 55)">🌟 Mario Kart Star</div>
+		<div class="grid-item" onClick="onButtonClick(this, 56)">🧑‍⚖️ My Name is Judge</div>
+		<div class="grid-item" onClick="onButtonClick(this, 57)">🦴 Bad To The Bone</div>
+		<div class="grid-item" onClick="onButtonClick(this, 209)">😢 Spongebob Disappointed</div>
+		<div class="grid-item" onClick="onButtonClick(this, 213)">🤨 Bruh</div>
+		<div class="grid-item" onClick="onButtonClick(this, 217)">💨 Fart</div>
+		<div class="grid-item" onClick="onButtonClick(this, 214)">😱 Wilhem Scream</div>
+		<div class="grid-item" onClick="onButtonClick(this, 216)">🥜 Nut</div>
+		<div class="grid-item" onClick="onButtonClick(this, 215)">🤹 Skill Issue</div>
+		<div class="grid-item" onClick="onButtonClick(this, 210)">🪖 Mike D Discord</div>
+		<div class="grid-item" onClick="onButtonClick(this, 218)">😋 I'm Hungry</div>
+		<div class="grid-item" onClick="onButtonClick(this, 211)">🐢 I Like Turtles</div>
+		<div class="grid-item" onClick="onButtonClick(this, 212)">👏 Please Clap</div>
+		<div class="grid-item" onClick="onButtonClick(this, 216)">💨💨Fart 2</div>
+		<div class="grid-item" onClick="onButtonClick(this, 45)">🔈</div>
+		<div class="grid-item" onClick="onButtonClick(this, 10)">🔇</div>
+		<div class="grid-item" onClick="onButtonClick(this, 43)">🔊</div>
 	</div>

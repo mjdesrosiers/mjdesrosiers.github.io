@@ -139,7 +139,7 @@
 					}],
 					optionalServices: ["0000ffff-0000-1000-8000-00805f9b34fb".toLowerCase()] // Required to access service later.
 				});
-
+				device.addEventListener('gattserverdisconnected', onDisconnected);
 
 				log('Connecting to GATT Server...');
 				server = await device.gatt.connect();
@@ -149,12 +149,22 @@
 
 				log('Getting Heart Rate Control Point Characteristic...');
 				characteristic = await service.getCharacteristic("0000FF01-0000-1000-8000-00805F9B34FB".toLowerCase());
+				let resetEnergyExpended = Uint8Array.of(id[0], id[1], id[2], id[3]);
+				await characteristic.writeValue(resetEnergyExpended);
+
 
 				log('> Energy expended has been reset.');
 				
 			} catch (error) {
 				log('Argh! ' + error);
 			}
+		}
+
+		function onDisconnected(event) {
+  			const device = event.target;
+			let resetEnergyExpended = Uint8Array.of(id[0], id[1], id[2], id[3]);
+			characteristic.writeValue(resetEnergyExpended);
+  			console.log(`Device ${device.name} is disconnected.`);
 		}
 
 		async function onButtonClick(dv, number) {

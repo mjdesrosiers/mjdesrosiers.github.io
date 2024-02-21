@@ -131,6 +131,10 @@
 		service = null;
 		characteristic = null;
 
+		function onDisconnected(event) {
+  			device = null;
+		}
+
 		async function pairWithBeacon(number) {
 			try {
 				log('Requesting Bluetooth Device...');
@@ -141,6 +145,7 @@
 					}],
 					optionalServices: ["0000ffff-0000-1000-8000-00805f9b34fb".toLowerCase()] // Required to access service later.
 				});
+				device.addEventListener('gattserverdisconnected', onDisconnected);
 
 				log('Connecting to GATT Server...');
 				server = await device.gatt.connect();
@@ -179,17 +184,23 @@
 			//log('> Disconnected.');
 		}
 
+		function updateStatus() {
+			dv = document.getElementById('mstatus')
+			if (device == null) {
+				dv.innerHTML = "Disconnected"
+			} else {
+				dv.innerHTML = "Connected"
+			}
+		}
+
+		setInterval(updateStatus, 1000);
+
 	</script>
 	<div id="output" class="output">
 		<div id="status"></div>
 		<pre id="log"></pre>
 	</div>
-	<script>
-		if (/Chrome\/(\d+\.\d+.\d+.\d+)/.test(navigator.userAgent)) {
-			// Let's log a warning if the sample is not supposed to execute on this
-			// version of Chrome.
-	}
-	</script>
+
 	<br><br>
 	<center><button style="font-size:2vh">Pair with beacon</button></center>
 	<br>
@@ -201,6 +212,8 @@
 			}
 		});
 	</script>
+
+	<center><div style="font-size:2vh; font-family: Helvetica, Arial, Sans-Serif;" id="mstatus">Disconnected</div></center>
 
 
 	<div class="grid-container">

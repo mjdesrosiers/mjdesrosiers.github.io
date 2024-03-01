@@ -4,13 +4,12 @@
 	<style>
 		.grid-container {
 			display: grid;
-			height: 100vh;
+			height: 85vh;
 			width: 90vw;
 			margin:auto;
 			grid-template-columns: repeat(3, 1fr);
 			background-color: #ffffff;
-			padding: 10px;
-			
+			padding: 10px;			
 		}
 
 		.grid-item {
@@ -20,7 +19,6 @@
 			font-size: clamp(1rem, 2vh, 4rem);
 			text-align: center;
 			border-radius: 3vh;
-			/*vertical-align: middle;*/
 			display: flex;
 			justify-content: center;
 			align-content: center;
@@ -32,91 +30,6 @@
 	</style>
 
 	<script>
-		if ('serviceWorker' in navigator) {
-			navigator.serviceWorker.register('service-worker.js');
-		}
-
-		window.addEventListener('DOMContentLoaded', function () {
-			const searchParams = new URL(location).searchParams;
-			const inputs = Array.from(document.querySelectorAll('input[id]'));
-
-			inputs.forEach(input => {
-				if (searchParams.has(input.id)) {
-					if (input.type == 'checkbox') {
-						input.checked = searchParams.get(input.id);
-					} else {
-						input.value = searchParams.get(input.id);
-						input.blur();
-					}
-				}
-				if (input.type == 'checkbox') {
-					input.addEventListener('change', function (event) {
-						const newSearchParams = new URL(location).searchParams;
-						if (event.target.checked) {
-							newSearchParams.set(input.id, event.target.checked);
-						} else {
-							newSearchParams.delete(input.id);
-						}
-						history.replaceState({}, '', Array.from(newSearchParams).length ?
-							location.pathname + '?' + newSearchParams : location.pathname);
-					});
-				} else {
-					input.addEventListener('input', function (event) {
-						const newSearchParams = new URL(location).searchParams;
-						if (event.target.value) {
-							newSearchParams.set(input.id, event.target.value);
-						} else {
-							newSearchParams.delete(input.id);
-						}
-						history.replaceState({}, '', Array.from(newSearchParams).length ?
-							location.pathname + '?' + newSearchParams : location.pathname);
-					});
-				}
-			});
-		});
-
-		var ChromeSamples = {
-			log: function () {
-				var line = Array.prototype.slice.call(arguments).map(function (argument) {
-					return typeof argument === 'string' ? argument : JSON.stringify(argument);
-				}).join(' ');
-
-				//document.querySelector('#log').textContent += line + '\n';
-			},
-
-			clearLog: function () {
-				document.querySelector('#log').textContent = '';
-			},
-
-			setStatus: function (status) {
-				document.querySelector('#status').textContent = status;
-			},
-
-			setContent: function (newContent) {
-				var content = document.querySelector('#content');
-				while (content.hasChildNodes()) {
-					content.removeChild(content.lastChild);
-				}
-				content.appendChild(newContent);
-			}
-		};
-
-		log = ChromeSamples.log;
-
-		function isWebBluetoothEnabled() {
-			if (navigator.bluetooth) {
-				return true;
-			} else {
-				ChromeSamples.setStatus('Web Bluetooth API is not available.\n' +
-					'Please make sure the "Experimental Web Platform features" flag is enabled.');
-				return false;
-			}
-		}
-
-		function sleep(ms) {
-			return new Promise(resolve => setTimeout(resolve, ms));
-		}
-
 		function makeID() {
 			idBits = [0, 0, 0, 0]
 			for (let i = 0; i < 4; i++) {
@@ -137,8 +50,6 @@
 
 		async function pairWithBeacon(number) {
 			try {
-				log('Requesting Bluetooth Device...');
-
 				device = await navigator.bluetooth.requestDevice({
 					filters: [{
 						name: 'MJD_BLE'
@@ -147,22 +58,13 @@
 				});
 				device.addEventListener('gattserverdisconnected', onDisconnected);
 
-				log('Connecting to GATT Server...');
 				server = await device.gatt.connect();
-
-				log('Getting Heart Rate Service...');
 				service = await server.getPrimaryService("0000FFFF-0000-1000-8000-00805F9B34FB".toLowerCase());
-
-				log('Getting Heart Rate Control Point Characteristic...');
 				characteristic = await service.getCharacteristic("0000FF01-0000-1000-8000-00805F9B34FB".toLowerCase());
 				let resetEnergyExpended = Uint8Array.of(id[0], id[1], id[2], id[3]);
 				await characteristic.writeValue(resetEnergyExpended);
-
-
-				log('> Energy expended has been reset.');
 				
 			} catch (error) {
-				log('Argh! ' + error);
 			}
 		}
 
@@ -170,18 +72,10 @@
 			dv.style.backgroundColor = "#8c8c8c";
 			setTimeout(function(){
 				dv.style.backgroundColor = "#f0f0f0";
-}			,200);
-			log('Writing Heart Rate Control Point Characteristic...');
-			// Writing 1 is the signal to reset energy expended.
+			} , 200);
 			let resetEnergyExpended = Uint8Array.of(1);
-			for (let i = 0; i < 1; i++) {
-				log("Writing " + i);
-				resetEnergyExpended = Uint8Array.of(id[0], id[1], id[2], id[3], number)
-				await characteristic.writeValue(resetEnergyExpended);
-				// await sleep(1000);
-			}
-			//await device.gatt.disconnect();
-			//log('> Disconnected.');
+			resetEnergyExpended = Uint8Array.of(id[0], id[1], id[2], id[3], number)
+			await characteristic.writeValue(resetEnergyExpended);
 		}
 
 		function updateStatus() {
@@ -196,20 +90,13 @@
 		setInterval(updateStatus, 1000);
 
 	</script>
-	<div id="output" class="output">
-		<div id="status"></div>
-		<pre id="log"></pre>
-	</div>
 
-	<br><br>
+	<br>
 	<center><button style="font-size:2vh">Pair with beacon</button></center>
 	<br>
 	<script>
 		document.querySelector('button').addEventListener('click', function () {
-			if (isWebBluetoothEnabled()) {
-				ChromeSamples.clearLog();
-				pairWithBeacon();
-			}
+			pairWithBeacon();
 		});
 	</script>
 
@@ -217,16 +104,16 @@
 
 
 	<div class="grid-container">
-		<div class="grid-item" onClick="onButtonClick(this, 48)">🤹 Skill Issue</div>
-		<div class="grid-item" onClick="onButtonClick(this, 49)">🤨 Bruh</div>
-		<div class="grid-item" onClick="onButtonClick(this, 50)">❌ Do Not Cum</div>
-		<div class="grid-item" onClick="onButtonClick(this, 51)">🫴 I'm Gonna Cun</div>
-		<div class="grid-item" onClick="onButtonClick(this, 52)">💨 Fart 1</div>
-		<div class="grid-item" onClick="onButtonClick(this, 53)">💨 Fart 2</div>
-		<div class="grid-item" onClick="onButtonClick(this, 54)">🌟 Mario Kart Star</div>
-		<div class="grid-item" onClick="onButtonClick(this, 55)">⭐ Perfect</div>
-		<div class="grid-item" onClick="onButtonClick(this, 56)">😢 Spongebob Disappointed</div>
-		<div class="grid-item" onClick="onButtonClick(this, 57)">🦴 Bad To The Bone</div>
+		<div class="grid-item" onClick="onButtonClick(this, 48)" >🤹 Skill Issue</div>
+		<div class="grid-item" onClick="onButtonClick(this, 49)" >🤨 Bruh</div>
+		<div class="grid-item" onClick="onButtonClick(this, 50)" >❌ Do Not Cum</div>
+		<div class="grid-item" onClick="onButtonClick(this, 51)" >🫴 I'm Gonna Cum</div>
+		<div class="grid-item" onClick="onButtonClick(this, 52)" >💨 Fart 1</div>
+		<div class="grid-item" onClick="onButtonClick(this, 53)" >💨 Fart 2</div>
+		<div class="grid-item" onClick="onButtonClick(this, 54)" >🌟 Mario Kart Star</div>
+		<div class="grid-item" onClick="onButtonClick(this, 55)" >⭐ Perfect</div>
+		<div class="grid-item" onClick="onButtonClick(this, 56)" >😢 Spongebob Disappointed</div>
+		<div class="grid-item" onClick="onButtonClick(this, 57)" >🦴 Bad To The Bone</div>
 		<div class="grid-item" onClick="onButtonClick(this, 209)">😋 Hungry</div>
 		<div class="grid-item" onClick="onButtonClick(this, 213)">1️⃣ I Am The One</div>
 		<div class="grid-item" onClick="onButtonClick(this, 217)">🥜 Nut</div>
@@ -238,7 +125,7 @@
 		<div class="grid-item" onClick="onButtonClick(this, 211)">📦 Zelda Chest</div>
 		<div class="grid-item" onClick="onButtonClick(this, 212)">🚗 Shut Up And Ride</div>
 		<div class="grid-item" onClick="onButtonClick(this, 219)">🚨 Wee Oo</div>
-		<div class="grid-item" onClick="onButtonClick(this, 45)">🔈</div>
+		<div class="grid-item" onClick="onButtonClick(this, 45)" >🔈</div>
 		<div class="grid-item" onClick="onButtonClick(this, 127)">🔇</div>
-		<div class="grid-item" onClick="onButtonClick(this, 43)">🔊</div>
+		<div class="grid-item" onClick="onButtonClick(this, 43)" >🔊</div>
 	</div>
